@@ -36,14 +36,14 @@ int parseInput(char *inputLine, char **arguments) {
 }
 
 int main(int argc, char * argv[]) {
-    char inputLine[BUFFER_SIZE];
+    // char inputLine[BUFFER_SIZE];
     char *arguments[ARGS_SIZE];
-    // char *inputLine;
+    char *inputLine;
     // char *arguments;
     int argumentCount;
     int waitStatus;
 
-    // inputLine = malloc(BUFFER_SIZE);
+    inputLine = malloc(BUFFER_SIZE);
     // arguments = malloc(ARGS_SIZE);
 
     while (LOOP) {
@@ -51,19 +51,22 @@ int main(int argc, char * argv[]) {
 
         fgets(inputLine, BUFFER_SIZE, stdin);
 
-        // if (feof) {
-        //     exit(EXIT_FAILURE);
-        // }
+        if (feof(stdin)) {
+            printf("\n");
+            break;
+            exit(EXIT_FAILURE);
+        }
 
-        // if (ferror) {
-        //     printf("ERROR: Could not read input.\n");
-        //     exit(EXIT_FAILURE);
-        // }
+        if (ferror(stdin)) {
+            printf("ERROR: Could not read input\n");
+            break;
+            exit(EXIT_FAILURE);
+        }
 
         argumentCount = parseInput(inputLine, arguments);
 
         if (argumentCount == 0) {
-            printf("ERROR: Empty command line.\n");
+            printf("ERROR: Empty command line\n");
             continue;
         }
 
@@ -76,20 +79,20 @@ int main(int argc, char * argv[]) {
 
         switch((ret = fork())) {
             case -1: 
-                printf("ERROR: Fork failed.\n");
+                printf("ERROR: Fork failed\n");
                 exit(EXIT_FAILURE);
 
             case 0: // Child              
                 execRet = execvp(arguments[0], arguments);
                 if (execRet == -1) {
-                    printf("ERROR: Exec call failed. Check command line.\n");
+                    printf("ERROR: Invalid command\n");
                     exit(EXIT_FAILURE);
                 }
                 break;
 
             default: // Parent 
                 if (wait(&waitStatus) == -1) {
-                    printf("ERROR: Parent error.\n");
+                    printf("ERROR: Parent error\n");
                     exit(EXIT_FAILURE);
                 } else {
                     printf("Child %d, exited with %d\n", ret, WEXITSTATUS(waitStatus));

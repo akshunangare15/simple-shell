@@ -7,7 +7,11 @@
 *
 * File: kumar_rinay_HW3_main.c
 *
-* Description:
+* Description: This program is a simple shell that runs on top of 
+* the Linux shell. It provides a prompt, then takes an input line via
+* fgets(), parses the line into tokens, forks to a child, then serves
+* the tokens/commands to an execvp() call, then returns the child PID
+* and exit status via a wait() call. 
 *
 **************************************************************/
 
@@ -18,8 +22,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 512
-#define ARGS_SIZE 5
+#define MAX_SIZE 512
 #define LOOP 1
 
 int parseInput(char *inputLine, char **arguments) {
@@ -28,7 +31,7 @@ int parseInput(char *inputLine, char **arguments) {
 
     arguments[count] = strtok(inputLine, delimiter);
 
-    while ((arguments[count] != NULL) && (count+1 < ARGS_SIZE)) {
+    while ((arguments[count] != NULL) && (count+1 < MAX_SIZE)) {
         arguments[++count] = strtok((char *) 0, delimiter);
     }
 
@@ -36,20 +39,17 @@ int parseInput(char *inputLine, char **arguments) {
 }
 
 int main(int argc, char * argv[]) {
-    // char inputLine[BUFFER_SIZE];
-    char *arguments[ARGS_SIZE];
+    char *arguments[MAX_SIZE];
     char *inputLine;
-    // char *arguments;
     int argumentCount;
     int waitStatus;
 
-    inputLine = malloc(BUFFER_SIZE);
-    // arguments = malloc(ARGS_SIZE);
+    inputLine = malloc(MAX_SIZE);
 
     while (LOOP) {
         printf("%s", argv[1]);
 
-        fgets(inputLine, BUFFER_SIZE, stdin);
+        fgets(inputLine, MAX_SIZE, stdin);
 
         if (feof(stdin)) {
             printf("\n");
@@ -71,6 +71,7 @@ int main(int argc, char * argv[]) {
         }
 
         if (strcmp(arguments[0], "exit") == 0) {
+            free(inputLine);
             exit(EXIT_SUCCESS);
         }
 

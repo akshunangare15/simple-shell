@@ -58,6 +58,12 @@ int main(int argc, char * argv[]) {
         // Get input from stdin up to MAX_SIZE and place in inputLine buffer
         fgets(inputLine, MAX_SIZE, stdin);
 
+        // Clear stdin buffer for input larger than MAX_SIZE
+        if (!strchr(inputLine, '\n')) {
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF);
+        }
+
         // If EOF, exit program
         if (feof(stdin)) {
             printf("\n");
